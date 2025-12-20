@@ -949,7 +949,7 @@
             });
         }
 
-        function setupEventListeners() {
+       function setupEventListeners() {
             document.getElementById('statusFilter').onchange = renderProjects;
             document.getElementById('ownerFilter').onchange = renderProjects;
 
@@ -962,8 +962,15 @@
                 e.preventDefault();
                 handleCycleSubmit();
             };
-        }
 
+            document.getElementById('addCommentForm').onsubmit = (e) => {
+                e.preventDefault();
+                const text = document.getElementById('commentText').value;
+                if (text.trim()) {
+                    addComment(text.trim());
+                }
+            };
+        }
         // ============================================
         // PROJECT FORM HANDLING
         // ============================================
@@ -1531,10 +1538,6 @@
             if (diffDays < 7) return `${diffDays}d ago`;
             return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
         }
-
-        // ============================================
-        // RENDER FUNCTIONS
-        // ============================================
 
 	  // ============================================
         // UTILITY FUNCTIONS
