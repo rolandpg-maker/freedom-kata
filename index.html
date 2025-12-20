@@ -12,6 +12,54 @@
             min-height: 100vh; 
         }
         
+        /* Login Screen */
+        .login-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #e84142 0%, #c23334 100%);
+        }
+        .login-box {
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 400px;
+            width: 90%;
+        }
+        .login-logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 30px;
+            display: block;
+            border-radius: 50%;
+        }
+        .login-title {
+            text-align: center;
+            color: #333;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        .login-subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+        }
+        .error-message {
+            background: #fee;
+            border: 1px solid #fcc;
+            color: #c00;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+        .error-message.show {
+            display: block;
+        }
+        
         /* Header */
         .header { 
             background: white; 
@@ -30,6 +78,51 @@
         .header-title { display: flex; align-items: center; gap: 15px; }
         .header-title h1 { color: #333; font-size: 1.5em; margin-bottom: 2px; }
         .header-title p { color: #666; font-size: 0.9em; }
+        
+        /* Header Right */
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 16px;
+            background: #f5f5f5;
+            border-radius: 8px;
+        }
+        .user-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #e84142;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .user-name {
+            font-weight: 600;
+            color: #333;
+        }
+        .btn-logout {
+            background: #666;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        .btn-logout:hover {
+            background: #555;
+        }
         
         /* Info Icon */
         .info-icon {
@@ -215,7 +308,7 @@
         .kata-component-title { font-weight: 700; color: #333; }
         .kata-component-content { color: #555; line-height: 1.6; margin-left: 42px; white-space: pre-wrap; }
         
-        /* Due Date - UPDATED */
+        /* Due Date */
         .due-date-container {
             display: flex;
             align-items: center;
@@ -315,218 +408,221 @@
         /* Loading */
         .loading { text-align: center; padding: 40px; color: #666; }
         
-        /* Setup Banner */
-        .setup-banner {
-            background: #fff4cc;
-            border: 2px solid #f59e0b;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 20px 40px;
-            text-align: center;
-        }
-        .setup-banner h2 {
-            color: #a87000;
-            margin-bottom: 10px;
-        }
-        .setup-banner p {
-            color: #666;
-            margin-bottom: 15px;
-        }
-        .setup-banner code {
-            background: white;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-family: monospace;
-            color: #333;
-        }
-        
         /* Hidden */
         .hidden { display: none; }
     </style>
 </head>
 <body>
-    <!-- Setup Banner (shown when Firebase not configured) -->
-    <div id="setupBanner" class="setup-banner" style="display: none;">
-        <h2>⚠️ Firebase Configuration Required</h2>
-        <p>Please update the Firebase configuration in the HTML file to enable the shared database.</p>
-        <p>Look for the <code>firebaseConfig</code> section in the code and replace it with your Firebase project details.</p>
-    </div>
-
-    <!-- Header -->
-    <div class="header">
-        <div class="header-left">
-            <img src="Freedom-Round-Red.png" alt="Freedom Logo" class="logo">
-            <div class="header-title">
-                <div>
-                    <h1>KATA Improvement Tracker</h1>
-                    <p>Continuous improvement through structured experiments</p>
-                </div>
-                <div class="info-icon" onclick="openInfoModal()">i</div>
-            </div>
-        </div>
-        <button class="btn btn-primary" onclick="openProjectModal()">+ New Project</button>
-    </div>
-
-    <!-- Main Container -->
-    <div class="container">
-        <div class="filters">
-            <select id="statusFilter">
-                <option value="all">All Status</option>
-                <option value="active">Active</option>
-                <option value="on-hold">On Hold</option>
-                <option value="completed">Completed</option>
-            </select>
-            <select id="ownerFilter">
-                <option value="all">All Owners</option>
-                <option value="Roland">Roland</option>
-                <option value="Rosie">Rosie</option>
-                <option value="Karl">Karl</option>
-                <option value="Reece">Reece</option>
-                <option value="Harry">Harry</option>
-            </select>
-        </div>
-
-        <div id="projectsContainer">
-            <div class="loading">Loading projects...</div>
-        </div>
-    </div>
-
-    <!-- Detail View -->
-    <div id="detailView" class="detail-view">
-        <div class="detail-header">
-            <button class="btn btn-secondary" onclick="closeDetailView()">← Back to Projects</button>
-            <div class="project-actions">
-                <button class="btn btn-secondary" onclick="editCurrentProject()">Edit Project</button>
-                <button class="btn btn-danger" onclick="deleteCurrentProject()">Delete Project</button>
-            </div>
-        </div>
-        <div class="detail-content">
-            <div class="project-info">
-                <div class="project-info-title" id="detailTitle"></div>
-                <div class="project-info-grid">
-                    <div class="info-section">
-                        <h3>DESCRIPTION</h3>
-                        <p id="detailDescription"></p>
-                    </div>
-                    <div class="info-section">
-                        <h3>OWNER</h3>
-                        <p id="detailOwner"></p>
-                    </div>
-                    <div class="info-section">
-                        <h3>START DATE</h3>
-                        <p id="detailStartDate"></p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="cycles-header">
-                <h2>KATA Cycles</h2>
-                <button class="btn btn-primary" onclick="openCycleModal()">+ Add New Cycle</button>
-            </div>
-            <div id="cyclesContainer"></div>
-        </div>
-    </div>
-
-    <!-- Project Modal -->
-    <div id="projectModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title" id="projectModalTitle">Create New Project</h2>
-                <button class="close-btn" onclick="closeProjectModal()">×</button>
-            </div>
-            <form id="projectForm">
+    <!-- Login Screen -->
+    <div id="loginContainer" class="login-container">
+        <div class="login-box">
+            <img src="Freedom-Round-Red.png" alt="Freedom Logo" class="login-logo">
+            <h1 class="login-title">KATA Tracker</h1>
+            <p class="login-subtitle">Sign in to continue</p>
+            
+            <div id="loginError" class="error-message"></div>
+            
+            <form id="loginForm">
                 <div class="form-group">
-                    <label for="projectTitle">Project Title *</label>
-                    <input type="text" id="projectTitle" required>
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" required placeholder="your.name@kata.team">
                 </div>
                 <div class="form-group">
-                    <label for="projectDescription">Description *</label>
-                    <textarea id="projectDescription" required></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="projectOwner">Owner *</label>
-                    <select id="projectOwner" required>
-                        <option value="">Select owner...</option>
-                        <option value="Roland">Roland</option>
-                        <option value="Rosie">Rosie</option>
-                        <option value="Karl">Karl</option>
-                        <option value="Reece">Reece</option>
-                        <option value="Harry">Harry</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="projectStatus">Status *</label>
-                    <select id="projectStatus" required>
-                        <option value="active">Active</option>
-                        <option value="on-hold">On Hold</option>
-                        <option value="completed">Completed</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="projectStartDate">Start Date *</label>
-                    <input type="date" id="projectStartDate" required>
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" required placeholder="Enter password">
                 </div>
                 <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeProjectModal()">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Project</button>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Sign In</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Cycle Modal -->
-    <div id="cycleModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title" id="cycleModalTitle">Add New KATA Cycle</h2>
-                <button class="close-btn" onclick="closeCycleModal()">×</button>
+    <!-- Main App (hidden until logged in) -->
+    <div id="mainApp" class="hidden">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <img src="Freedom-Round-Red.png" alt="Freedom Logo" class="logo">
+                <div class="header-title">
+                    <div>
+                        <h1>KATA Improvement Tracker</h1>
+                        <p>Continuous improvement through structured experiments</p>
+                    </div>
+                    <div class="info-icon" onclick="openInfoModal()">i</div>
+                </div>
             </div>
-            <form id="cycleForm">
-                <div class="form-group">
-                    <label for="actualCondition">Actual Condition *</label>
-                    <textarea id="actualCondition" required placeholder="What is the current state?"></textarea>
+            <div class="header-right">
+                <div class="user-info">
+                    <div class="user-icon" id="userIcon"></div>
+                    <span class="user-name" id="userName">User</span>
                 </div>
-                <div class="form-group">
-                    <label for="targetCondition">Target Condition *</label>
-                    <textarea id="targetCondition" required placeholder="What is the desired state?"></textarea>
+                <button class="btn-logout" onclick="logout()">Logout</button>
+                <button class="btn btn-primary" onclick="openProjectModal()">+ New Project</button>
+            </div>
+        </div>
+
+        <!-- Main Container -->
+        <div class="container">
+            <div class="filters">
+                <select id="statusFilter">
+                    <option value="all">All Status</option>
+                    <option value="active">Active</option>
+                    <option value="on-hold">On Hold</option>
+                    <option value="completed">Completed</option>
+                </select>
+                <select id="ownerFilter">
+                    <option value="all">All Owners</option>
+                    <option value="Roland">Roland</option>
+                    <option value="Rosie">Rosie</option>
+                    <option value="Karl">Karl</option>
+                    <option value="Reece">Reece</option>
+                    <option value="Harry">Harry</option>
+                </select>
+            </div>
+
+            <div id="projectsContainer">
+                <div class="loading">Loading projects...</div>
+            </div>
+        </div>
+
+        <!-- Detail View -->
+        <div id="detailView" class="detail-view">
+            <div class="detail-header">
+                <button class="btn btn-secondary" onclick="closeDetailView()">← Back to Projects</button>
+                <div class="project-actions">
+                    <button class="btn btn-secondary" onclick="editCurrentProject()">Edit Project</button>
+                    <button class="btn btn-danger" onclick="deleteCurrentProject()">Delete Project</button>
                 </div>
-                <div class="form-group">
-                    <label for="obstacles">Obstacles</label>
-                    <textarea id="obstacles" placeholder="What obstacles are preventing progress?"></textarea>
+            </div>
+            <div class="detail-content">
+                <div class="project-info">
+                    <div class="project-info-title" id="detailTitle"></div>
+                    <div class="project-info-grid">
+                        <div class="info-section">
+                            <h3>DESCRIPTION</h3>
+                            <p id="detailDescription"></p>
+                        </div>
+                        <div class="info-section">
+                            <h3>OWNER</h3>
+                            <p id="detailOwner"></p>
+                        </div>
+                        <div class="info-section">
+                            <h3>START DATE</h3>
+                            <p id="detailStartDate"></p>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="nextSteps">Next Steps *</label>
-                    <textarea id="nextSteps" required placeholder="What experiments will you run?"></textarea>
+
+                <div class="cycles-header">
+                    <h2>KATA Cycles</h2>
+                    <button class="btn btn-primary" onclick="openCycleModal()">+ Add New Cycle</button>
                 </div>
-                <div class="form-group">
-                    <label for="deadline">Deadline</label>
-                    <input type="date" id="deadline">
+                <div id="cyclesContainer"></div>
+            </div>
+        </div>
+
+        <!-- Project Modal -->
+        <div id="projectModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="projectModalTitle">Create New Project</h2>
+                    <button class="close-btn" onclick="closeProjectModal()">×</button>
                 </div>
-                <div class="form-group">
-                    <label for="learnings">Learnings</label>
-                    <textarea id="learnings" placeholder="What have you learned from this cycle?"></textarea>
+                <form id="projectForm">
+                    <div class="form-group">
+                        <label for="projectTitle">Project Title *</label>
+                        <input type="text" id="projectTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="projectDescription">Description *</label>
+                        <textarea id="projectDescription" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="projectOwner">Owner *</label>
+                        <select id="projectOwner" required>
+                            <option value="">Select owner...</option>
+                            <option value="Roland">Roland</option>
+                            <option value="Rosie">Rosie</option>
+                            <option value="Karl">Karl</option>
+                            <option value="Reece">Reece</option>
+                            <option value="Harry">Harry</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="projectStatus">Status *</label>
+                        <select id="projectStatus" required>
+                            <option value="active">Active</option>
+                            <option value="on-hold">On Hold</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="projectStartDate">Start Date *</label>
+                        <input type="date" id="projectStartDate" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeProjectModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Project</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Cycle Modal -->
+        <div id="cycleModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="cycleModalTitle">Add New KATA Cycle</h2>
+                    <button class="close-btn" onclick="closeCycleModal()">×</button>
+                </div>
+                <form id="cycleForm">
+                    <div class="form-group">
+                        <label for="actualCondition">Actual Condition *</label>
+                        <textarea id="actualCondition" required placeholder="What is the current state?"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="targetCondition">Target Condition *</label>
+                        <textarea id="targetCondition" required placeholder="What is the desired state?"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="obstacles">Obstacles</label>
+                        <textarea id="obstacles" placeholder="What obstacles are preventing progress?"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="nextSteps">Next Steps *</label>
+                        <textarea id="nextSteps" required placeholder="What experiments will you run?"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="deadline">Deadline</label>
+                        <input type="date" id="deadline">
+                    </div>
+                    <div class="form-group">
+                        <label for="learnings">Learnings</label>
+                        <textarea id="learnings" placeholder="What have you learned from this cycle?"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeCycleModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Cycle</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Info Modal -->
+        <div id="infoModal" class="modal">
+            <div class="modal-content info-modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">What is KATA?</h2>
+                    <button class="close-btn" onclick="closeInfoModal()">×</button>
+                </div>
+                <div class="info-text">
+                    <p>KATA is a structured, continuous improvement routine that helps teams build problem-solving habits and achieve ambitious goals through small, consistent steps. Originating from Toyota's improvement and coaching practices, it focuses on understanding the current condition, setting a clear target, experimenting toward it, and learning from each step.</p>
+                    <p style="margin-top: 15px;">By applying KATA in our travel insurance business, we create a culture of curiosity, accountability, and innovation. It enables everyone, from contact centre to management, to identify barriers, test ideas quickly, and measure progress scientifically. The result is smarter decisions, better customer experiences, and steady growth through daily, purposeful improvement.</p>
                 </div>
                 <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeCycleModal()">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Cycle</button>
+                    <button class="btn btn-primary" onclick="closeInfoModal()">Got it!</button>
                 </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Info Modal -->
-    <div id="infoModal" class="modal">
-        <div class="modal-content info-modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">What is KATA?</h2>
-                <button class="close-btn" onclick="closeInfoModal()">×</button>
-            </div>
-            <div class="info-text">
-                <p>KATA is a structured, continuous improvement routine that helps teams build problem-solving habits and achieve ambitious goals through small, consistent steps. Originating from Toyota's improvement and coaching practices, it focuses on understanding the current condition, setting a clear target, experimenting toward it, and learning from each step.</p>
-                <p style="margin-top: 15px;">By applying KATA in our travel insurance business, we create a culture of curiosity, accountability, and innovation. It enables everyone, from contact centre to management, to identify barriers, test ideas quickly, and measure progress scientifically. The result is smarter decisions, better customer experiences, and steady growth through daily, purposeful improvement.</p>
-            </div>
-            <div class="form-actions">
-                <button class="btn btn-primary" onclick="closeInfoModal()">Got it!</button>
             </div>
         </div>
     </div>
@@ -534,6 +630,7 @@
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 
     <script>
         // ============================================
@@ -558,34 +655,104 @@
         }
 
         // Initialize Firebase
-        let db;
-        if (isConfigured) {
-            firebase.initializeApp(firebaseConfig);
-            db = firebase.database();
-        }
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const auth = firebase.auth();
 
         // Global variables
         let projects = [];
         let currentProjectId = null;
         let editingProjectId = null;
         let editingCycleId = null;
+        let currentUser = null;
 
-        // Database functions
-        async function loadProjects() {
-            if (!isConfigured) {
-                // Use localStorage as fallback
+        // User accounts to create
+        const userAccounts = [
+            { email: 'roland@kata.team', name: 'Roland', password: '202clicks' },
+            { email: 'rosie@kata.team', name: 'Rosie', password: '202clicks' },
+            { email: 'karl@kata.team', name: 'Karl', password: '202clicks' },
+            { email: 'reece@kata.team', name: 'Reece', password: '202clicks' },
+            { email: 'harry@kata.team', name: 'Harry', password: '202clicks' }
+        ];
+
+        // ============================================
+        // AUTHENTICATION
+        // ============================================
+
+        // Create user accounts (runs once on first load)
+        async function createUserAccounts() {
+            const accountsCreated = localStorage.getItem('kata-accounts-created');
+            if (accountsCreated) return;
+
+            console.log('Creating user accounts...');
+            for (const user of userAccounts) {
                 try {
-                    const stored = localStorage.getItem('kata-projects');
-                    if (stored) {
-                        projects = JSON.parse(stored);
-                    }
+                    const userCredential = await auth.createUserWithEmailAndPassword(user.email, user.password);
+                    await userCredential.user.updateProfile({ displayName: user.name });
+                    console.log(`Created account for ${user.name}`);
                 } catch (error) {
-                    console.error('Failed to load from localStorage:', error);
+                    if (error.code === 'auth/email-already-in-use') {
+                        console.log(`Account for ${user.email} already exists`);
+                    } else {
+                        console.error(`Error creating account for ${user.name}:`, error);
+                    }
                 }
-                renderProjects();
-                return;
             }
+            localStorage.setItem('kata-accounts-created', 'true');
+            console.log('User account setup complete');
+        }
 
+        // Login
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const errorDiv = document.getElementById('loginError');
+
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+                errorDiv.classList.remove('show');
+            } catch (error) {
+                console.error('Login error:', error);
+                errorDiv.textContent = 'Invalid email or password. Please try again.';
+                errorDiv.classList.add('show');
+            }
+        });
+
+        // Logout
+        function logout() {
+            auth.signOut();
+        }
+
+        // Auth state observer
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                currentUser = {
+                    uid: user.uid,
+                    email: user.email,
+                    name: user.displayName || user.email.split('@')[0]
+                };
+                
+                // Update UI
+                document.getElementById('loginContainer').classList.add('hidden');
+                document.getElementById('mainApp').classList.remove('hidden');
+                document.getElementById('userName').textContent = currentUser.name;
+                document.getElementById('userIcon').textContent = currentUser.name.charAt(0).toUpperCase();
+                
+                // Load app
+                init();
+            } else {
+                currentUser = null;
+                document.getElementById('loginContainer').classList.remove('hidden');
+                document.getElementById('mainApp').classList.add('hidden');
+            }
+        });
+
+        // ============================================
+        // DATABASE FUNCTIONS
+        // ============================================
+
+        async function loadProjects() {
             try {
                 const snapshot = await db.ref('projects').once('value');
                 const data = snapshot.val();
@@ -598,18 +765,6 @@
         }
 
         async function saveProject(project) {
-            if (!isConfigured) {
-                // Use localStorage as fallback
-                const index = projects.findIndex(p => p.id === project.id);
-                if (index >= 0) {
-                    projects[index] = project;
-                } else {
-                    projects.push(project);
-                }
-                localStorage.setItem('kata-projects', JSON.stringify(projects));
-                return true;
-            }
-
             try {
                 await db.ref('projects/' + project.id).set(project);
                 return true;
@@ -621,13 +776,6 @@
         }
 
         async function deleteProjectFromDB(projectId) {
-            if (!isConfigured) {
-                // Use localStorage as fallback
-                projects = projects.filter(p => p.id !== projectId);
-                localStorage.setItem('kata-projects', JSON.stringify(projects));
-                return true;
-            }
-
             try {
                 await db.ref('projects/' + projectId).remove();
                 return true;
@@ -638,27 +786,28 @@
             }
         }
 
-        // Initialize app
+        // ============================================
+        // INITIALIZE APP
+        // ============================================
+
         function init() {
             loadProjects();
             setupEventListeners();
             
-            // Listen for real-time updates if Firebase is configured
-            if (isConfigured) {
-                db.ref('projects').on('value', (snapshot) => {
-                    const data = snapshot.val();
-                    projects = data ? Object.values(data) : [];
-                    renderProjects();
-                    
-                    // Update detail view if currently viewing a project
-                    if (currentProjectId) {
-                        const currentProject = projects.find(p => p.id === currentProjectId);
-                        if (currentProject) {
-                            renderCycles(currentProject);
-                        }
+            // Listen for real-time updates
+            db.ref('projects').on('value', (snapshot) => {
+                const data = snapshot.val();
+                projects = data ? Object.values(data) : [];
+                renderProjects();
+                
+                // Update detail view if currently viewing a project
+                if (currentProjectId) {
+                    const currentProject = projects.find(p => p.id === currentProjectId);
+                    if (currentProject) {
+                        renderCycles(currentProject);
                     }
-                });
-            }
+                }
+            });
         }
 
         function setupEventListeners() {
@@ -676,7 +825,10 @@
             };
         }
 
-        // Project form handling
+        // ============================================
+        // PROJECT FORM HANDLING
+        // ============================================
+
         async function handleProjectSubmit() {
             const projectData = {
                 title: document.getElementById('projectTitle').value,
@@ -693,6 +845,7 @@
                 if (project) {
                     Object.assign(project, projectData);
                     project.updatedAt = new Date().toISOString();
+                    project.updatedBy = currentUser.name;
                 }
             } else {
                 // Create new project
@@ -700,7 +853,8 @@
                     id: 'proj_' + Date.now(),
                     ...projectData,
                     cycles: [],
-                    createdAt: new Date().toISOString()
+                    createdAt: new Date().toISOString(),
+                    createdBy: currentUser.name
                 };
             }
 
@@ -713,7 +867,10 @@
             }
         }
 
-        // Cycle form handling
+        // ============================================
+        // CYCLE FORM HANDLING
+        // ============================================
+
         async function handleCycleSubmit() {
             const project = projects.find(p => p.id === currentProjectId);
             if (!project) return;
@@ -733,13 +890,15 @@
                 if (cycle) {
                     Object.assign(cycle, cycleData);
                     cycle.updatedAt = new Date().toISOString();
+                    cycle.updatedBy = currentUser.name;
                 }
             } else {
                 // Create new cycle
                 const newCycle = {
                     id: 'cycle_' + Date.now(),
                     ...cycleData,
-                    createdAt: new Date().toISOString()
+                    createdAt: new Date().toISOString(),
+                    createdBy: currentUser.name
                 };
                 if (!project.cycles) project.cycles = [];
                 project.cycles.unshift(newCycle);
@@ -751,7 +910,10 @@
             }
         }
 
-        // Render functions
+        // ============================================
+        // RENDER FUNCTIONS
+        // ============================================
+
         function renderProjects() {
             const statusFilter = document.getElementById('statusFilter').value;
             const ownerFilter = document.getElementById('ownerFilter').value;
@@ -783,6 +945,7 @@
                             <div class="project-description">${escapeHtml(project.description)}</div>
                             <div class="project-meta">
                                 <div>Owner: <strong>${escapeHtml(project.owner)}</strong></div>
+                                <div>Created by: ${escapeHtml(project.createdBy || 'Unknown')}</div>
                                 <div>Started: ${formatDate(project.startDate)}</div>
                                 <div class="cycle-count">${project.cycles?.length || 0} KATA cycles</div>
                             </div>
@@ -808,7 +971,10 @@
             container.innerHTML = project.cycles.map(cycle => `
                 <div class="cycle-card">
                     <div class="cycle-card-header">
-                        <div class="cycle-title">Cycle ${formatDate(cycle.createdAt)}</div>
+                        <div>
+                            <div class="cycle-title">Cycle ${formatDate(cycle.createdAt)}</div>
+                            <div style="font-size: 0.85em; color: #666; margin-top: 5px;">Created by ${escapeHtml(cycle.createdBy || 'Unknown')}</div>
+                        </div>
                         <div class="cycle-actions">
                             <button class="btn btn-secondary btn-icon" onclick="editCycle('${project.id}', '${cycle.id}')">Edit</button>
                             <button class="btn btn-danger btn-icon" onclick="deleteCycle('${project.id}', '${cycle.id}')">Delete</button>
@@ -868,7 +1034,10 @@
             `).join('');
         }
 
-        // Modal functions
+        // ============================================
+        // MODAL FUNCTIONS
+        // ============================================
+
         function openProjectModal(projectId = null) {
             editingProjectId = projectId;
             
@@ -925,7 +1094,6 @@
             document.getElementById('cycleForm').reset();
         }
 
-        // Info Modal functions
         function openInfoModal() {
             document.getElementById('infoModal').classList.add('active');
         }
@@ -934,7 +1102,10 @@
             document.getElementById('infoModal').classList.remove('active');
         }
 
-        // Detail view functions
+        // ============================================
+        // DETAIL VIEW FUNCTIONS
+        // ============================================
+
         function showProjectDetail(projectId) {
             currentProjectId = projectId;
             const project = projects.find(p => p.id === projectId);
@@ -954,7 +1125,6 @@
             document.getElementById('detailView').classList.remove('active');
         }
 
-        // Edit functions
         function editCurrentProject() {
             openProjectModal(currentProjectId);
         }
@@ -963,7 +1133,10 @@
             openCycleModal(cycleId);
         }
 
-        // Delete functions
+        // ============================================
+        // DELETE FUNCTIONS
+        // ============================================
+
         async function deleteCurrentProject() {
             if (!confirm('Are you sure you want to delete this project? This action cannot be undone.')) {
                 return;
@@ -992,7 +1165,10 @@
             }
         }
 
-        // Utility functions
+        // ============================================
+        // UTILITY FUNCTIONS
+        // ============================================
+
         function formatDate(dateStr) {
             if (!dateStr) return 'Not set';
             const date = new Date(dateStr);
@@ -1022,8 +1198,12 @@
             return div.innerHTML;
         }
 
-        // Initialize the app when page loads
-        window.addEventListener('DOMContentLoaded', init);
+        // ============================================
+        // START APP
+        // ============================================
+
+        // Create user accounts on first load
+        createUserAccounts();
     </script>
 </body>
 </html>
