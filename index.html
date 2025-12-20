@@ -936,6 +936,14 @@
                     const currentProject = projects.find(p => p.id === currentProjectId);
                     if (currentProject) {
                         renderCycles(currentProject);
+	document.getElementById('addCommentForm').onsubmit = (e) => {
+                e.preventDefault();
+                const text = document.getElementById('commentText').value;
+                if (text.trim()) {
+                    addComment(text.trim());
+                }
+            };
+
                     }
                 }
             });
@@ -1086,7 +1094,7 @@
             `;
         }
 
-        function renderCycles(project) {
+      function renderCycles(project) {
             const container = document.getElementById('cyclesContainer');
 
             if (!project.cycles || project.cycles.length === 0) {
@@ -1116,6 +1124,9 @@
                         <div class="kata-component-header">
                             <div class="kata-icon">📍</div>
                             <div class="kata-component-title">Actual Condition</div>
+                            <div class="comment-icon" onclick="openCommentsModal('${cycle.id}', 'actual')">
+                                ${getCommentCount(cycle, 'actual') > 0 ? `<span class="comment-count">${getCommentCount(cycle, 'actual')}</span>` : ''}
+                            </div>
                         </div>
                         <div class="kata-component-content">${escapeHtml(cycle.actualCondition)}</div>
                     </div>
@@ -1124,6 +1135,9 @@
                         <div class="kata-component-header">
                             <div class="kata-icon">🎯</div>
                             <div class="kata-component-title">Target Condition</div>
+                            <div class="comment-icon" onclick="openCommentsModal('${cycle.id}', 'target')">
+                                ${getCommentCount(cycle, 'target') > 0 ? `<span class="comment-count">${getCommentCount(cycle, 'target')}</span>` : ''}
+                            </div>
                         </div>
                         <div class="kata-component-content">${escapeHtml(cycle.targetCondition)}</div>
                     </div>
@@ -1133,6 +1147,9 @@
                             <div class="kata-component-header">
                                 <div class="kata-icon">⚠️</div>
                                 <div class="kata-component-title">Obstacles</div>
+                                <div class="comment-icon" onclick="openCommentsModal('${cycle.id}', 'obstacles')">
+                                    ${getCommentCount(cycle, 'obstacles') > 0 ? `<span class="comment-count">${getCommentCount(cycle, 'obstacles')}</span>` : ''}
+                                </div>
                             </div>
                             <div class="kata-component-content">${escapeHtml(cycle.obstacles)}</div>
                         </div>
@@ -1142,6 +1159,9 @@
                         <div class="kata-component-header">
                             <div class="kata-icon">→</div>
                             <div class="kata-component-title">Next Steps</div>
+                            <div class="comment-icon" onclick="openCommentsModal('${cycle.id}', 'nextSteps')">
+                                ${getCommentCount(cycle, 'nextSteps') > 0 ? `<span class="comment-count">${getCommentCount(cycle, 'nextSteps')}</span>` : ''}
+                            </div>
                         </div>
                         <div class="kata-component-content">${escapeHtml(cycle.nextSteps)}</div>
                         ${cycle.deadline ? `
@@ -1157,12 +1177,16 @@
                             <div class="kata-component-header">
                                 <div class="kata-icon">💡</div>
                                 <div class="kata-component-title">Learnings</div>
+                                <div class="comment-icon" onclick="openCommentsModal('${cycle.id}', 'learnings')">
+                                    ${getCommentCount(cycle, 'learnings') > 0 ? `<span class="comment-count">${getCommentCount(cycle, 'learnings')}</span>` : ''}
+                                </div>
                             </div>
                             <div class="kata-component-content">${escapeHtml(cycle.learnings)}</div>
                         </div>
                     ` : ''}
                 </div>
             `).join('');
+        }
         }
 
         // ============================================
