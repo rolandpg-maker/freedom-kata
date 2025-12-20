@@ -1505,7 +1505,11 @@
         // ============================================
         // RENDER FUNCTIONS
         // ============================================
-  function renderProjects() {
+// ============================================
+        // RENDER FUNCTIONS
+        // ============================================
+
+        function renderProjects() {
             const statusFilter = document.getElementById('statusFilter').value;
             const ownerFilter = document.getElementById('ownerFilter').value;
 
@@ -1525,19 +1529,26 @@
                     </div>
                 `;
                 return;
-            } 
-	  function renderCycles(project) {
-            const container = document.getElementById('cyclesContainer');
+            }
 
-            if (!project.cycles || project.cycles.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <h3>No KATA cycles yet</h3>
-                        <p>Add your first cycle to start tracking improvements</p>
-                    </div>
-                `;
-                return;
-            }	  
+            container.innerHTML = `
+                <div class="projects-grid">
+                    ${filtered.map(project => `
+                        <div class="project-card" onclick="showProjectDetail('${project.id}')">
+                            <span class="status-badge status-${project.status}">${formatStatus(project.status)}</span>
+                            <div class="project-title">${escapeHtml(project.title)}</div>
+                            <div class="project-description">${escapeHtml(project.description)}</div>
+                            <div class="project-meta">
+                                <div>Owner: <strong>${escapeHtml(project.owner)}</strong></div>
+                                <div>Created by: ${escapeHtml(project.createdBy || 'Unknown')}</div>
+                                <div>Started: ${formatDate(project.startDate)}</div>
+                                <div class="cycle-count">${project.cycles?.length || 0} KATA cycles</div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }	  
 	  // ============================================
         // UTILITY FUNCTIONS
         // ============================================
