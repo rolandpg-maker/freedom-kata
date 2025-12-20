@@ -1053,27 +1053,7 @@
         // RENDER FUNCTIONS
         // ============================================
 
-        function renderProjects() {
-            const statusFilter = document.getElementById('statusFilter').value;
-            const ownerFilter = document.getElementById('ownerFilter').value;
-
-            let filtered = projects.filter(p => {
-                if (statusFilter !== 'all' && p.status !== statusFilter) return false;
-                if (ownerFilter !== 'all' && p.owner !== ownerFilter) return false;
-                return true;
-            });
-
-            const container = document.getElementById('projectsContainer');
-
-            if (filtered.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <h3>No projects found</h3>
-                        <p>Create your first project to start tracking KATA cycles</p>
-                    </div>
-                `;
-                return;
-            }
+      
 
             container.innerHTML = `
                 <div class="projects-grid">
@@ -1094,18 +1074,7 @@
             `;
         }
 
-      function renderCycles(project) {
-            const container = document.getElementById('cyclesContainer');
-
-            if (!project.cycles || project.cycles.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <h3>No KATA cycles yet</h3>
-                        <p>Add your first cycle to start tracking improvements</p>
-                    </div>
-                `;
-                return;
-            }
+      
 
             container.innerHTML = project.cycles.map(cycle => `
                 <div class="cycle-card">
@@ -1518,7 +1487,7 @@
             return Object.values(cycle.comments).filter(c => c.fieldType === fieldType).length;
         }
 
-        function formatCommentTime(timestamp) {
+       function formatCommentTime(timestamp) {
             const date = new Date(timestamp);
             const now = new Date();
             const diffMs = now - date;
@@ -1534,6 +1503,42 @@
         }
 
         // ============================================
+        // RENDER FUNCTIONS
+        // ============================================
+  function renderProjects() {
+            const statusFilter = document.getElementById('statusFilter').value;
+            const ownerFilter = document.getElementById('ownerFilter').value;
+
+            let filtered = projects.filter(p => {
+                if (statusFilter !== 'all' && p.status !== statusFilter) return false;
+                if (ownerFilter !== 'all' && p.owner !== ownerFilter) return false;
+                return true;
+            });
+
+            const container = document.getElementById('projectsContainer');
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No projects found</h3>
+                        <p>Create your first project to start tracking KATA cycles</p>
+                    </div>
+                `;
+                return;
+            } 
+	  function renderCycles(project) {
+            const container = document.getElementById('cyclesContainer');
+
+            if (!project.cycles || project.cycles.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No KATA cycles yet</h3>
+                        <p>Add your first cycle to start tracking improvements</p>
+                    </div>
+                `;
+                return;
+            }	  
+	  // ============================================
         // UTILITY FUNCTIONS
         // ============================================
 
