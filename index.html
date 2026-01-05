@@ -859,10 +859,10 @@
         auth.onAuthStateChanged(async (user) => {
             if (user) {
                 currentUser = {
-                    uid: user.uid,
-                    email: user.email,
-                    name: user.displayName || user.email.split('@')[0]
-                };
+            uid: user.uid,
+            email: user.email,
+            name: user.displayName || capitalizeFirstLetter(user.email.split('@')[0])
+        };
                 
                 // Update UI
                 document.getElementById('loginContainer').classList.add('hidden');
@@ -1551,6 +1551,9 @@
         // UTILITY FUNCTIONS
         // ============================================
 
+		 function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
         function formatDate(dateStr) {
             if (!dateStr) return 'Not set';
             const date = new Date(dateStr);
