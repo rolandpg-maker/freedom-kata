@@ -1069,6 +1069,14 @@
                 if (ownerFilter !== 'all' && p.owner !== ownerFilter) return false;
                 return true;
             });
+			
+			// Sort by most recent activity (newest first)
+            filtered.sort((a, b) => {
+                // Get the most recent timestamp for each project
+                const aTime = a.updatedAt || a.createdAt || '';
+                const bTime = b.updatedAt || b.createdAt || '';
+                return bTime.localeCompare(aTime); // Descending order (newest first)
+            });
 
             const container = document.getElementById('projectsContainer');
 
