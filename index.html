@@ -1099,7 +1099,7 @@
                             <div class="project-description">${escapeHtml(project.description)}</div>
                             <div class="project-meta">
                                 <div>Owner: <strong>${escapeHtml(project.owner)}</strong></div>
-<div>Created by: <strong>${escapeHtml(project.createdBy || 'Unknown')}</strong></div>
+<div>Created by: ${escapeHtml(project.createdBy || 'Unknown')}</div>
 <div>Started: ${formatDate(project.startDate)}</div>
                                 <div class="cycle-count">${project.cycles?.length || 0} KATA cycles</div>
                             </div>
