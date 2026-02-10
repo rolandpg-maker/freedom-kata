@@ -1100,10 +1100,10 @@
                         <div class="project-card" onclick="showProjectDetail('${project.id}')">
                             <span class="status-badge status-${project.status}">${formatStatus(project.status)}</span>
                             <div class="project-title">
-    ${getUpdateInfo(project) ? '<span class="update-flag">🚩</span>' : ''}
+    ${getUpdateInfo(project) ? '<span class="update-flag" style="color: #f97316;">⚑</span>' : ''}
     ${escapeHtml(project.title)}
+    ${getUpdateInfo(project) ? `<span class="update-info" style="font-size: 0.7em; margin-left: 10px;">Updated ${getUpdateInfo(project)}</span>` : ''}
 </div>
-${getUpdateInfo(project) ? `<div class="update-info">Updated ${getUpdateInfo(project)}</div>` : ''}
                             <div class="project-description">${escapeHtml(project.description)}</div>
                             <div class="project-meta">
                                 <div>Owner: <strong>${escapeHtml(project.owner)}</strong></div>
