@@ -1579,8 +1579,8 @@ function getUpdateInfo(project) {
             const diffMs = now - updateDate;
             const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
             
-            // Show flag for updates within last 7 days
-            if (diffDays <= 7) {
+            // Show flag for updates within last 4 days
+            if (diffDays <= 4) {
                 let timeText;
                 if (diffDays === 0) {
                     const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
