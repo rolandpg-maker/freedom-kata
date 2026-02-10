@@ -1558,7 +1558,32 @@
 		 function capitalizeFirstLetter(string) {
             return string.charAt(0).toUpperCase() + string.slice(1);
         }
-        function formatDate(dateStr) {
+function getUpdateInfo(project) {
+            // Get the most recent timestamp
+            const lastUpdate = project.updatedAt || project.createdAt;
+            if (!lastUpdate) return null;
+            
+            const now = new Date();
+            const updateDate = new Date(lastUpdate);
+            const diffMs = now - updateDate;
+            const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+            
+            // Show flag for updates within last 7 days
+            if (diffDays <= 7) {
+                let timeText;
+                if (diffDays === 0) {
+                    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+                    timeText = diffHours === 0 ? 'just now' : `${diffHours}h ago`;
+                } else if (diffDays === 1) {
+                    timeText = 'yesterday';
+                } else {
+                    timeText = `${diffDays} days ago`;
+                }
+                return timeText;
+            }
+            return null;
+        }
+		function formatDate(dateStr) {
             if (!dateStr) return 'Not set';
             const date = new Date(dateStr);
             return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
