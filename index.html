@@ -1110,8 +1110,7 @@
         </div>
         <span class="status-badge status-${project.status}">${formatStatus(project.status)}</span>
     </div>
-                            ${getUpdateInfo(project) ? `<div style="margin-bottom: 5px;"><span class="update-flag" style="color: #f97316;">⚑</span><span class="update-info" style="font-size: 0.85em; margin-left: 5px;">Updated ${getUpdateInfo(project)}</span></div>` : ''}
-<div class="project-title">${escapeHtml(project.title)}</div>
+                <div class="project-title">${escapeHtml(project.title)}</div>
                             <div class="project-description">${escapeHtml(project.description)}</div>
                             <div class="project-meta">
                                 <div>Owner: <strong>${escapeHtml(project.owner)}</strong></div>
