@@ -1059,7 +1059,7 @@
                 if (!project.cycles) project.cycles = [];
                 project.cycles.unshift(newCycle);
             }
-
+project.updatedAt = new Date().toISOString();
             if (await saveProject(project)) {
                 closeCycleModal();
                 renderCycles(project);
