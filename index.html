@@ -1,0 +1,1636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KATA Improvement Tracker</title>
+	<link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            background: #f5f5f5; 
+            min-height: 100vh; 
+        }
+        
+        /* Login Screen */
+        .login-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #e84142 0%, #c23334 100%);
+        }
+        .login-box {
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 400px;
+            width: 90%;
+        }
+        .login-logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 30px;
+            display: block;
+            border-radius: 50%;
+        }
+        .login-title {
+            text-align: center;
+            color: #333;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        .login-subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+        }
+        .error-message {
+            background: #fee;
+            border: 1px solid #fcc;
+            color: #c00;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+        .error-message.show {
+            display: block;
+        }
+        
+        /* Header */
+        .header { 
+            background: white; 
+            border-bottom: 1px solid #e0e0e0; 
+            padding: 20px 40px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .logo { 
+            width: 50px; 
+            height: 50px; 
+            border-radius: 50%;
+        }
+        .header-title { display: flex; align-items: center; gap: 15px; }
+        .header-title h1 { color: #333; font-size: 1.5em; margin-bottom: 2px; }
+        .header-title p { color: #666; font-size: 0.9em; }
+        
+        /* Header Right */
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 16px;
+            background: #f5f5f5;
+            border-radius: 8px;
+        }
+        .user-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #e84142;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .user-name {
+            font-weight: 600;
+            color: #333;
+        }
+        .btn-logout {
+            background: #666;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        .btn-logout:hover {
+            background: #555;
+        }
+        
+        /* Info Icon */
+        .info-icon {
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #e84142;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            transition: background 0.3s;
+            flex-shrink: 0;
+        }
+        .info-icon:hover {
+            background: #c23334;
+        }
+        
+        /* Container */
+        .container { max-width: 1400px; margin: 0 auto; padding: 30px 40px; }
+        
+        /* Filters */
+        .filters { display: flex; gap: 15px; margin-bottom: 30px; }
+        select { 
+            padding: 10px 15px; 
+            border-radius: 8px; 
+            border: 1px solid #e0e0e0; 
+            font-size: 14px; 
+            background: white; 
+            cursor: pointer; 
+        }
+        
+        /* Buttons */
+        .btn { 
+            padding: 10px 20px; 
+            border-radius: 8px; 
+            border: none; 
+            cursor: pointer; 
+            font-size: 14px; 
+            font-weight: 600; 
+            transition: all 0.3s; 
+        }
+        .btn-primary { background: #e84142; color: white; }
+        .btn-primary:hover { background: #c23334; }
+        .btn-secondary { background: white; color: #333; border: 1px solid #e0e0e0; }
+        .btn-secondary:hover { background: #f5f5f5; }
+        .btn-danger { background: #dc2626; color: white; }
+        .btn-danger:hover { background: #b91c1c; }
+        .btn-icon { padding: 8px 12px; font-size: 0.9em; }
+        
+        /* Projects Grid */
+        .projects-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); 
+            gap: 20px; 
+        }
+        .project-card { 
+            background: white; 
+            border-radius: 12px; 
+            padding: 20px; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08); 
+            cursor: pointer; 
+            transition: all 0.3s; 
+        }
+        .project-card:hover { 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12); 
+            transform: translateY(-2px); 
+        }
+	.project-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+}
+		
+        /* Status Badges */
+        .status-badge { 
+            padding: 4px 12px; 
+            border-radius: 20px; 
+            font-size: 0.75em; 
+            font-weight: 600; 
+        }
+        .status-active { background: #d4f4dd; color: #0f7b2e; }
+        .status-on-hold { background: #fff4cc; color: #a87000; }
+        .status-completed { background: #e0e0e0; color: #666; }
+        
+        /* Project Card Content */
+        .project-title { font-size: 1.1em; font-weight: 700; color: #333; margin: 10px 0; }
+        .project-description { 
+            color: #666; 
+            font-size: 0.9em; 
+            margin-bottom: 15px; 
+            line-height: 1.5; 
+            display: -webkit-box; 
+            -webkit-line-clamp: 2; 
+            -webkit-box-orient: vertical; 
+            overflow: hidden; 
+        }
+        .project-meta { display: flex; flex-direction: column; gap: 8px; font-size: 0.85em; color: #666; }
+        .cycle-count { color: #e84142; font-weight: 600; }
+        
+        /* Detail View */
+        .detail-view { 
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            right: 0; 
+            bottom: 0; 
+            background: #f5f5f5; 
+            z-index: 1000; 
+            overflow-y: auto; 
+        }
+        .detail-view.active { display: block; }
+        .detail-header { 
+            background: white; 
+            border-bottom: 1px solid #e0e0e0; 
+            padding: 20px 40px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        .detail-content { max-width: 1200px; margin: 0 auto; padding: 30px 40px; }
+        .project-actions { display: flex; gap: 10px; }
+        
+        /* Project Info */
+        .project-info { background: white; border-radius: 12px; padding: 30px; margin-bottom: 30px; }
+        .project-info-title { font-size: 1.8em; font-weight: 700; color: #333; }
+        .project-info-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 30px; margin-top: 20px; }
+        .info-section h3 { font-size: 0.9em; color: #666; margin-bottom: 8px; font-weight: 600; }
+        
+        /* Cycles */
+        .cycles-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 20px; 
+        }
+        .cycle-card { 
+            background: white; 
+            border-radius: 12px; 
+            padding: 25px; 
+            margin-bottom: 20px; 
+            position: relative; 
+        }
+        .cycle-card-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 20px; 
+            padding-bottom: 15px; 
+            border-bottom: 2px solid #f5f5f5; 
+        }
+        .cycle-title { font-size: 1.3em; font-weight: 700; color: #333; }
+        .cycle-actions { display: flex; gap: 10px; }
+        
+        /* KATA Components */
+        .kata-component { 
+            margin-bottom: 20px; 
+            border-radius: 10px; 
+            padding: 15px; 
+            border-left: 4px solid; 
+        }
+        .kata-component.actual { background: #fef2f2; border-color: #ef4444; }
+        .kata-component.target { background: #eff6ff; border-color: #3b82f6; }
+        .kata-component.obstacle { background: #fef9e7; border-color: #f59e0b; }
+        .kata-component.nextstep { background: #f3e8ff; border-color: #a855f7; }
+        .kata-component.learning { background: #ecfdf5; border-color: #10b981; }
+        
+        .kata-component-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .kata-icon { 
+            width: 32px; 
+            height: 32px; 
+            border-radius: 8px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 16px; 
+        }
+        .kata-component.actual .kata-icon { background: #ef4444; color: white; }
+        .kata-component.target .kata-icon { background: #3b82f6; color: white; }
+        .kata-component.obstacle .kata-icon { background: #f59e0b; color: white; }
+        .kata-component.nextstep .kata-icon { background: #a855f7; color: white; }
+        .kata-component.learning .kata-icon { background: #10b981; color: white; }
+        
+        .kata-component-title { font-weight: 700; color: #333; }
+        .kata-component-content { color: #555; line-height: 1.6; margin-left: 42px; white-space: pre-wrap; }
+        
+        /* Due Date */
+        .due-date-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+            margin-left: 42px;
+        }
+        .due-date-label {
+            font-weight: 600;
+            color: #555;
+            font-size: 0.9em;
+        }
+        .deadline-badge { 
+            display: inline-block; 
+            padding: 4px 12px; 
+            border-radius: 20px; 
+            font-size: 0.85em; 
+            font-weight: 600; 
+        }
+        .deadline-badge.overdue { background: #fee; color: #c00; }
+        .deadline-badge.upcoming { background: #fff4cc; color: #a87000; }
+        .deadline-badge.ok { background: #d4f4dd; color: #0f7b2e; }
+        
+        /* Modal */
+        .modal { 
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            right: 0; 
+            bottom: 0; 
+            background: rgba(0,0,0,0.5); 
+            z-index: 2000; 
+            align-items: center; 
+            justify-content: center; 
+        }
+        .modal.active { display: flex; }
+        .modal-content { 
+            background: white; 
+            border-radius: 12px; 
+            width: 90%; 
+            max-width: 600px; 
+            max-height: 90vh; 
+            overflow-y: auto; 
+            padding: 30px; 
+        }
+        .modal-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 25px; 
+        }
+        .modal-title { font-size: 1.5em; font-weight: 700; color: #333; }
+        .close-btn { 
+            background: none; 
+            border: none; 
+            font-size: 24px; 
+            cursor: pointer; 
+            color: #999; 
+            padding: 0; 
+            width: 30px; 
+            height: 30px; 
+        }
+        
+        /* Form */
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 8px; color: #333; }
+        .form-group input, 
+        .form-group select, 
+        .form-group textarea { 
+            width: 100%; 
+            padding: 10px; 
+            border: 1px solid #e0e0e0; 
+            border-radius: 8px; 
+            font-size: 14px; 
+            font-family: inherit; 
+        }
+        .form-group textarea { min-height: 80px; resize: vertical; }
+        .form-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 25px; }
+        
+        /* Info Modal */
+        .info-modal-content {
+            max-width: 700px;
+        }
+        .info-text {
+            color: #555;
+            line-height: 1.8;
+            font-size: 1.05em;
+            margin-bottom: 20px;
+        }
+        
+        /* Empty State */
+        .empty-state { text-align: center; padding: 60px 20px; background: white; border-radius: 12px; }
+        .empty-state h3 { font-size: 1.3em; color: #333; margin-bottom: 10px; }
+        .empty-state p { color: #666; }
+        
+        /* Loading */
+        .loading { text-align: center; padding: 40px; color: #666; }
+        
+        /* Hidden */
+        .hidden { display: none; }
+    
+	/* Comment Icon */
+	.comment-icon {
+    	cursor: pointer;
+   	position: relative;
+    	width: 24px;
+    	height: 24px;
+    	background: #ffd93d;
+    	border-radius: 4px;
+    	display: flex;
+    	align-items: center;
+    	justify-content: center;
+    	font-size: 12px;
+    	box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    	transition: transform 0.2s;
+    	margin-left: auto;
+}
+.comment-icon:hover {
+    transform: scale(1.1);
+}
+.comment-icon::before {
+    content: '📝';
+    font-size: 14px;
+}
+.comment-count {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: #e84142;
+    color: white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: bold;
+}
+
+/* Comments Modal */
+.comments-modal-content {
+    max-width: 700px;
+}
+.comments-list {
+    max-height: 400px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+}
+.comment-item {
+    background: #ffd93d;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    position: relative;
+}
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+.comment-author {
+    font-weight: 700;
+    color: #333;
+}
+.comment-time {
+    font-size: 0.85em;
+    color: #666;
+}
+.comment-text {
+    color: #333;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    margin-bottom: 10px;
+}
+.comment-actions {
+    display: flex;
+    gap: 10px;
+}
+.comment-actions button {
+    font-size: 0.85em;
+    padding: 4px 10px;
+}
+.no-comments {
+    text-align: center;
+    color: #666;
+    padding: 40px;
+}
+.reply-item {
+    background: #fff4cc;
+    padding: 12px;
+    border-radius: 6px;
+    margin-top: 10px;
+    margin-left: 20px;
+    border-left: 3px solid #ffd93d;
+}
+.add-comment-form {
+    border-top: 2px solid #f5f5f5;
+    padding-top: 20px;
+}
+
+</style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginContainer" class="login-container">
+        <div class="login-box">
+            <img src="Freedom-Round-Red.png" alt="Freedom Logo" class="login-logo">
+            <h1 class="login-title">KATA Tracker v2</h1>
+            <p class="login-subtitle">Sign in to continue</p>
+            
+            <div id="loginError" class="error-message"></div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" required placeholder="your.name@kata.team">
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" required placeholder="Enter password">
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Sign In</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main App (hidden until logged in) -->
+    <div id="mainApp" class="hidden">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <img src="Freedom-Round-Red.png" alt="Freedom Logo v2" class="logo">
+                <div class="header-title">
+                    <div>
+                        <h1>KATA Improvement Tracker</h1>
+                        <p>Continuous improvement through structured experiments</p>
+                    </div>
+                    <div class="info-icon" onclick="openInfoModal()">i</div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="user-info">
+                    <div class="user-icon" id="userIcon"></div>
+                    <span class="user-name" id="userName">User</span>
+                </div>
+                <button class="btn-logout" onclick="logout()">Logout</button>
+                <button class="btn btn-primary" onclick="openProjectModal()">+ New Project</button>
+            </div>
+        </div>
+
+        <!-- Main Container -->
+        <div class="container">
+            <div class="filters">
+                <select id="statusFilter">
+                    <option value="all">All Status</option>
+                    <option value="active">Active</option>
+                    <option value="on-hold">On Hold</option>
+                    <option value="completed">Completed</option>
+                </select>
+                <select id="ownerFilter">
+                    <option value="all">All Owners</option>
+                    <option value="Roland">Roland</option>
+                    <option value="Rosie">Rosie</option>
+                    <option value="Karl">Karl</option>
+                    <option value="Reece">Reece</option>
+                    <option value="Harry">Harry</option>
+					<option value="Ciara">Ciara</option>
+                </select>
+            </div>
+
+            <div id="projectsContainer">
+                <div class="loading">Loading projects...</div>
+            </div>
+        </div>
+
+        <!-- Detail View -->
+        <div id="detailView" class="detail-view">
+            <div class="detail-header">
+                <button class="btn btn-secondary" onclick="closeDetailView()">← Back to Projects</button>
+                <div class="project-actions">
+                    <button class="btn btn-secondary" onclick="editCurrentProject()">Edit Project</button>
+                    <button class="btn btn-danger" onclick="deleteCurrentProject()">Delete Project</button>
+                </div>
+            </div>
+            <div class="detail-content">
+                <div class="project-info">
+                    <div class="project-info-title" id="detailTitle"></div>
+                    <div class="project-info-grid">
+                        <div class="info-section">
+                            <h3>DESCRIPTION</h3>
+                            <p id="detailDescription"></p>
+                        </div>
+                        <div class="info-section">
+                            <h3>OWNER</h3>
+                            <p id="detailOwner"></p>
+                        </div>
+                        <div class="info-section">
+                            <h3>START DATE</h3>
+                            <p id="detailStartDate"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cycles-header">
+                    <h2>KATA Cycles</h2>
+                    <button class="btn btn-primary" onclick="openCycleModal()">+ Add New Cycle</button>
+                </div>
+                <div id="cyclesContainer"></div>
+            </div>
+        </div>
+
+        <!-- Project Modal -->
+        <div id="projectModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="projectModalTitle">Create New Project</h2>
+                    <button class="close-btn" onclick="closeProjectModal()">×</button>
+                </div>
+                <form id="projectForm">
+                    <div class="form-group">
+                        <label for="projectTitle">Project Title *</label>
+                        <input type="text" id="projectTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="projectDescription">Description *</label>
+                        <textarea id="projectDescription" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="projectOwner">Owner *</label>
+                        <select id="projectOwner" required>
+                            <option value="">Select owner...</option>
+                            <option value="Roland">Roland</option>
+                            <option value="Rosie">Rosie</option>
+                            <option value="Karl">Karl</option>
+                            <option value="Reece">Reece</option>
+                            <option value="Harry">Harry</option>
+							<option value="Ciara">Ciara</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="projectStatus">Status *</label>
+                        <select id="projectStatus" required>
+                            <option value="active">Active</option>
+                            <option value="on-hold">On Hold</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="projectStartDate">Start Date *</label>
+                        <input type="date" id="projectStartDate" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeProjectModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Project</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Cycle Modal -->
+        <div id="cycleModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="cycleModalTitle">Add New KATA Cycle</h2>
+                    <button class="close-btn" onclick="closeCycleModal()">×</button>
+                </div>
+                <form id="cycleForm">
+                    <div class="form-group">
+                        <label for="actualCondition">Actual Condition *</label>
+                        <textarea id="actualCondition" required placeholder="What is the current state?"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="targetCondition">Target Condition *</label>
+                        <textarea id="targetCondition" required placeholder="What is the desired state?"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="obstacles">Obstacles</label>
+                        <textarea id="obstacles" placeholder="What obstacles are preventing progress?"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="nextSteps">Next Steps *</label>
+                        <textarea id="nextSteps" required placeholder="What experiments will you run?"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="deadline">Deadline</label>
+                        <input type="date" id="deadline">
+                    </div>
+                    <div class="form-group">
+                        <label for="learnings">Learnings</label>
+                        <textarea id="learnings" placeholder="What have you learned from this cycle?"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeCycleModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Cycle</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Info Modal -->
+        <div id="infoModal" class="modal">
+            <div class="modal-content info-modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">What is KATA?</h2>
+                    <button class="close-btn" onclick="closeInfoModal()">×</button>
+                </div>
+                <div class="info-text">
+                    <p>KATA is a structured, continuous improvement routine that helps teams build problem-solving habits and achieve ambitious goals through small, consistent steps. Originating from Toyota's improvement and coaching practices, it focuses on understanding the current condition, setting a clear target, experimenting toward it, and learning from each step.</p>
+                    <p style="margin-top: 15px;">By applying KATA in our travel insurance business, we create a culture of curiosity, accountability, and innovation. It enables everyone, from contact centre to management, to identify barriers, test ideas quickly, and measure progress scientifically. The result is smarter decisions, better customer experiences, and steady growth through daily, purposeful improvement.</p>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-primary" onclick="closeInfoModal()">Got it!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- Comments Modal -->
+        <div id="commentsModal" class="modal">
+            <div class="modal-content comments-modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="commentsModalTitle">Comments</h2>
+                    <button class="close-btn" onclick="closeCommentsModal()">×</button>
+                </div>
+                
+                <div class="comments-list" id="commentsList">
+                    <div class="no-comments">No comments yet. Be the first to add one!</div>
+                </div>
+                
+                <div class="add-comment-form">
+                    <form id="addCommentForm">
+                        <div class="form-group">
+                            <label for="commentText">Add Comment</label>
+                            <textarea id="commentText" required placeholder="Write your comment here..." rows="3"></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Add Comment</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
+    <script>
+        // ============================================
+        // FIREBASE CONFIGURATION
+        // Replace this with your Firebase project config
+        // ============================================
+       const firebaseConfig = {
+  apiKey: "AIzaSyDBsndSH2R-HDG6rhwC6ddsjP1-SFJsCS4",
+  authDomain: "kata-tracker-2.firebaseapp.com",
+  databaseURL: "https://kata-tracker-2-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "kata-tracker-2",
+  storageBucket: "kata-tracker-2.firebasestorage.app",
+  messagingSenderId: "798708318066",
+  appId: "1:798708318066:web:8e6ae78174e8fe9695e7eb"
+};
+
+        // Check if Firebase is configured
+        const isConfigured = firebaseConfig.apiKey !== "YOUR_API_KEY_HERE";
+        
+        if (!isConfigured) {
+            document.getElementById('setupBanner').style.display = 'block';
+        }
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const auth = firebase.auth();
+
+        // Global variables
+        let projects = [];
+        let currentProjectId = null;
+        let editingProjectId = null;
+        let editingCycleId = null;
+        let currentUser = null;
+	let currentCommentCycleId = null;
+	let currentCommentFieldType = null;
+
+        // User accounts to create
+        const userAccounts = [
+            { email: 'roland@kata.team', name: 'Roland', password: '202clicks' },
+            { email: 'rosie@kata.team', name: 'Rosie', password: '202clicks' },
+            { email: 'karl@kata.team', name: 'Karl', password: '202clicks' },
+            { email: 'reece@kata.team', name: 'Reece', password: '202clicks' },
+            { email: 'harry@kata.team', name: 'Harry', password: '202clicks' }
+        ];
+
+        // ============================================
+        // AUTHENTICATION
+        // ============================================
+
+        // Create user accounts (runs once on first load)
+        async function createUserAccounts() {
+            const accountsCreated = localStorage.getItem('kata-accounts-created');
+            if (accountsCreated) return;
+
+            console.log('Creating user accounts...');
+            for (const user of userAccounts) {
+                try {
+                    const userCredential = await auth.createUserWithEmailAndPassword(user.email, user.password);
+                    await userCredential.user.updateProfile({ displayName: user.name });
+                    console.log(`Created account for ${user.name}`);
+                } catch (error) {
+                    if (error.code === 'auth/email-already-in-use') {
+                        console.log(`Account for ${user.email} already exists`);
+                    } else {
+                        console.error(`Error creating account for ${user.name}:`, error);
+                    }
+                }
+            }
+            localStorage.setItem('kata-accounts-created', 'true');
+            console.log('User account setup complete');
+        }
+
+        // Login
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const errorDiv = document.getElementById('loginError');
+
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+                errorDiv.classList.remove('show');
+            } catch (error) {
+                console.error('Login error:', error);
+                errorDiv.textContent = 'Invalid email or password. Please try again.';
+                errorDiv.classList.add('show');
+            }
+        });
+
+        // Logout
+        function logout() {
+            auth.signOut();
+        }
+
+        // Auth state observer
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                currentUser = {
+            uid: user.uid,
+            email: user.email,
+            name: user.displayName || capitalizeFirstLetter(user.email.split('@')[0])
+        };
+                
+                // Update UI
+                document.getElementById('loginContainer').classList.add('hidden');
+                document.getElementById('mainApp').classList.remove('hidden');
+                document.getElementById('userName').textContent = currentUser.name;
+                document.getElementById('userIcon').textContent = currentUser.name.charAt(0).toUpperCase();
+                
+                // Load app
+                init();
+            } else {
+                currentUser = null;
+                document.getElementById('loginContainer').classList.remove('hidden');
+                document.getElementById('mainApp').classList.add('hidden');
+            }
+        });
+
+        // ============================================
+        // DATABASE FUNCTIONS
+        // ============================================
+
+        async function loadProjects() {
+            try {
+                const snapshot = await db.ref('projects').once('value');
+                const data = snapshot.val();
+                projects = data ? Object.values(data) : [];
+                renderProjects();
+            } catch (error) {
+                console.error('Failed to load projects:', error);
+                alert('Failed to load projects. Please refresh the page.');
+            }
+        }
+
+        async function saveProject(project) {
+            try {
+                await db.ref('projects/' + project.id).set(project);
+                return true;
+            } catch (error) {
+                console.error('Failed to save project:', error);
+                alert('Failed to save project. Please try again.');
+                return false;
+            }
+        }
+
+        async function deleteProjectFromDB(projectId) {
+            try {
+                await db.ref('projects/' + projectId).remove();
+                return true;
+            } catch (error) {
+                console.error('Failed to delete project:', error);
+                alert('Failed to delete project. Please try again.');
+                return false;
+            }
+        }
+
+        // ============================================
+        // INITIALIZE APP
+        // ============================================
+
+        function init() {
+            loadProjects();
+            setupEventListeners();
+            
+            // Listen for real-time updates
+            db.ref('projects').on('value', (snapshot) => {
+                const data = snapshot.val();
+                projects = data ? Object.values(data) : [];
+                renderProjects();
+                
+                // Update detail view if currently viewing a project
+                if (currentProjectId) {
+                    const currentProject = projects.find(p => p.id === currentProjectId);
+                    if (currentProject) {
+                        renderCycles(currentProject);
+	document.getElementById('addCommentForm').onsubmit = (e) => {
+                e.preventDefault();
+                const text = document.getElementById('commentText').value;
+                if (text.trim()) {
+                    addComment(text.trim());
+                }
+            };
+
+                    }
+                }
+            });
+        }
+
+       function setupEventListeners() {
+            document.getElementById('statusFilter').onchange = renderProjects;
+            document.getElementById('ownerFilter').onchange = renderProjects;
+
+            document.getElementById('projectForm').onsubmit = (e) => {
+                e.preventDefault();
+                handleProjectSubmit();
+            };
+
+            document.getElementById('cycleForm').onsubmit = (e) => {
+                e.preventDefault();
+                handleCycleSubmit();
+            };
+
+            document.getElementById('addCommentForm').onsubmit = (e) => {
+                e.preventDefault();
+                const text = document.getElementById('commentText').value;
+                if (text.trim()) {
+                    addComment(text.trim());
+                }
+            };
+        }
+        // ============================================
+        // PROJECT FORM HANDLING
+        // ============================================
+
+        async function handleProjectSubmit() {
+            const projectData = {
+                title: document.getElementById('projectTitle').value,
+                description: document.getElementById('projectDescription').value,
+                owner: document.getElementById('projectOwner').value,
+                status: document.getElementById('projectStatus').value,
+                startDate: document.getElementById('projectStartDate').value
+            };
+
+            let project;
+            if (editingProjectId) {
+                // Update existing project
+                project = projects.find(p => p.id === editingProjectId);
+                if (project) {
+                    Object.assign(project, projectData);
+                    project.updatedAt = new Date().toISOString();
+                    project.updatedBy = currentUser.name;
+                }
+            } else {
+                // Create new project
+                project = {
+                    id: 'proj_' + Date.now(),
+                    ...projectData,
+                    cycles: [],
+                    createdAt: new Date().toISOString(),
+                    createdBy: currentUser.name
+                };
+            }
+
+            if (await saveProject(project)) {
+                closeProjectModal();
+                await loadProjects();
+                if (currentProjectId === editingProjectId) {
+                    showProjectDetail(editingProjectId);
+                }
+            }
+        }
+
+        // ============================================
+        // CYCLE FORM HANDLING
+        // ============================================
+
+        async function handleCycleSubmit() {
+            const project = projects.find(p => p.id === currentProjectId);
+            if (!project) return;
+
+            const cycleData = {
+                actualCondition: document.getElementById('actualCondition').value,
+                targetCondition: document.getElementById('targetCondition').value,
+                obstacles: document.getElementById('obstacles').value,
+                nextSteps: document.getElementById('nextSteps').value,
+                deadline: document.getElementById('deadline').value,
+                learnings: document.getElementById('learnings').value
+            };
+
+            if (editingCycleId) {
+                // Update existing cycle
+                const cycle = project.cycles.find(c => c.id === editingCycleId);
+                if (cycle) {
+                    Object.assign(cycle, cycleData);
+                    cycle.updatedAt = new Date().toISOString();
+                    cycle.updatedBy = currentUser.name;
+                }
+            } else {
+                // Create new cycle
+                const newCycle = {
+                    id: 'cycle_' + Date.now(),
+                    ...cycleData,
+                    createdAt: new Date().toISOString(),
+                    createdBy: currentUser.name
+                };
+                if (!project.cycles) project.cycles = [];
+                project.cycles.unshift(newCycle);
+            }
+project.updatedAt = new Date().toISOString();
+            if (await saveProject(project)) {
+                closeCycleModal();
+                renderCycles(project);
+            }
+        }
+
+        // ============================================
+        // RENDER FUNCTIONS
+        // ============================================
+
+        function renderProjects() {
+            const statusFilter = document.getElementById('statusFilter').value;
+            const ownerFilter = document.getElementById('ownerFilter').value;
+
+            let filtered = projects.filter(p => {
+                if (statusFilter !== 'all' && p.status !== statusFilter) return false;
+                if (ownerFilter !== 'all' && p.owner !== ownerFilter) return false;
+                return true;
+            });
+			
+			// Sort by most recent activity (newest first)
+            filtered.sort((a, b) => {
+                // Get the most recent timestamp for each project
+                const aTime = a.updatedAt || a.createdAt || '';
+                const bTime = b.updatedAt || b.createdAt || '';
+                return bTime.localeCompare(aTime); // Descending order (newest first)
+            });
+
+            const container = document.getElementById('projectsContainer');
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No projects found</h3>
+                        <p>Create your first project to start tracking KATA cycles</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="projects-grid">
+                    ${filtered.map(project => `
+                       <div class="project-card" onclick="showProjectDetail('${project.id}')">
+    <div class="project-card-header">
+        <div>
+            ${getUpdateInfo(project) ? `<div style="margin-bottom: 5px;"><span class="update-flag" style="color: #f97316;">⚑</span><span class="update-info" style="font-size: 0.85em; margin-left: 5px;">Updated ${getUpdateInfo(project)}</span></div>` : ''}
+        </div>
+        <span class="status-badge status-${project.status}">${formatStatus(project.status)}</span>
+    </div>
+                <div class="project-title">${escapeHtml(project.title)}</div>
+                            <div class="project-description">${escapeHtml(project.description)}</div>
+                            <div class="project-meta">
+                                <div>Owner: <strong>${escapeHtml(project.owner)}</strong></div>
+<div>Created by: ${escapeHtml(project.createdBy || 'Unknown')}</div>
+<div>Started: ${formatDate(project.startDate)}</div>
+                                <div class="cycle-count">${project.cycles?.length || 0} KATA cycles</div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function renderCycles(project) {
+            const container = document.getElementById('cyclesContainer');
+
+            if (!project.cycles || project.cycles.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No KATA cycles yet</h3>
+                        <p>Add your first cycle to start tracking improvements</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = project.cycles.map(cycle => `
+                <div class="cycle-card">
+                    <div class="cycle-card-header">
+                        <div>
+                            <div class="cycle-title">Cycle ${formatDate(cycle.createdAt)}</div>
+                            <div style="font-size: 0.85em; color: #666; margin-top: 5px;">Created by ${escapeHtml(cycle.createdBy || 'Unknown')}</div>
+                        </div>
+                        <div class="cycle-actions">
+                            <button class="btn btn-secondary btn-icon" onclick="editCycle('${project.id}', '${cycle.id}')">Edit</button>
+                            <button class="btn btn-danger btn-icon" onclick="deleteCycle('${project.id}', '${cycle.id}')">Delete</button>
+                        </div>
+                    </div>
+
+                    <div class="kata-component actual">
+                        <div class="kata-component-header">
+                            <div class="kata-icon">📍</div>
+                            <div class="kata-component-title">Actual Condition</div>
+                            <div class="comment-icon" onclick="openCommentsModal('${cycle.id}', 'actual')">
+                                ${getCommentCount(cycle, 'actual') > 0 ? `<span class="comment-count">${getCommentCount(cycle, 'actual')}</span>` : ''}
+                            </div>
+                        </div>
+                        <div class="kata-component-content">${escapeHtml(cycle.actualCondition)}</div>
+                    </div>
+
+                    <div class="kata-component target">
+                        <div class="kata-component-header">
+                            <div class="kata-icon">🎯</div>
+                            <div class="kata-component-title">Target Condition</div>
+                            <div class="comment-icon" onclick="openCommentsModal('${cycle.id}', 'target')">
+                                ${getCommentCount(cycle, 'target') > 0 ? `<span class="comment-count">${getCommentCount(cycle, 'target')}</span>` : ''}
+                            </div>
+                        </div>
+                        <div class="kata-component-content">${escapeHtml(cycle.targetCondition)}</div>
+                    </div>
+
+                    ${cycle.obstacles ? `
+                        <div class="kata-component obstacle">
+                            <div class="kata-component-header">
+                                <div class="kata-icon">⚠️</div>
+                                <div class="kata-component-title">Obstacles</div>
+                                <div class="comment-icon" onclick="openCommentsModal('${cycle.id}', 'obstacles')">
+                                    ${getCommentCount(cycle, 'obstacles') > 0 ? `<span class="comment-count">${getCommentCount(cycle, 'obstacles')}</span>` : ''}
+                                </div>
+                            </div>
+                            <div class="kata-component-content">${escapeHtml(cycle.obstacles)}</div>
+                        </div>
+                    ` : ''}
+
+                    <div class="kata-component nextstep">
+                        <div class="kata-component-header">
+                            <div class="kata-icon">→</div>
+                            <div class="kata-component-title">Next Steps</div>
+                            <div class="comment-icon" onclick="openCommentsModal('${cycle.id}', 'nextSteps')">
+                                ${getCommentCount(cycle, 'nextSteps') > 0 ? `<span class="comment-count">${getCommentCount(cycle, 'nextSteps')}</span>` : ''}
+                            </div>
+                        </div>
+                        <div class="kata-component-content">${escapeHtml(cycle.nextSteps)}</div>
+                        ${cycle.deadline ? `
+                            <div class="due-date-container">
+                                <span class="due-date-label">Due date:</span>
+                                <span class="deadline-badge ${getDeadlineClass(cycle.deadline)}">📅 ${formatDate(cycle.deadline)}</span>
+                            </div>
+                        ` : ''}
+                    </div>
+
+                    ${cycle.learnings ? `
+                        <div class="kata-component learning">
+                            <div class="kata-component-header">
+                                <div class="kata-icon">💡</div>
+                                <div class="kata-component-title">Learnings</div>
+                                <div class="comment-icon" onclick="openCommentsModal('${cycle.id}', 'learnings')">
+                                    ${getCommentCount(cycle, 'learnings') > 0 ? `<span class="comment-count">${getCommentCount(cycle, 'learnings')}</span>` : ''}
+                                </div>
+                            </div>
+                            <div class="kata-component-content">${escapeHtml(cycle.learnings)}</div>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+        // ============================================
+        // MODAL FUNCTIONS
+        // ============================================
+
+        function openProjectModal(projectId = null) {
+            editingProjectId = projectId;
+            
+            if (projectId) {
+                const project = projects.find(p => p.id === projectId);
+                if (project) {
+                    document.getElementById('projectModalTitle').textContent = 'Edit Project';
+                    document.getElementById('projectTitle').value = project.title;
+                    document.getElementById('projectDescription').value = project.description;
+                    document.getElementById('projectOwner').value = project.owner;
+                    document.getElementById('projectStatus').value = project.status;
+                    document.getElementById('projectStartDate').value = project.startDate;
+                }
+            } else {
+                document.getElementById('projectModalTitle').textContent = 'Create New Project';
+                document.getElementById('projectForm').reset();
+            }
+            
+            document.getElementById('projectModal').classList.add('active');
+        }
+
+        function closeProjectModal() {
+            editingProjectId = null;
+            document.getElementById('projectModal').classList.remove('active');
+            document.getElementById('projectForm').reset();
+        }
+
+        function openCycleModal(cycleId = null) {
+            editingCycleId = cycleId;
+            
+            if (cycleId) {
+                const project = projects.find(p => p.id === currentProjectId);
+                const cycle = project?.cycles.find(c => c.id === cycleId);
+                if (cycle) {
+                    document.getElementById('cycleModalTitle').textContent = 'Edit KATA Cycle';
+                    document.getElementById('actualCondition').value = cycle.actualCondition;
+                    document.getElementById('targetCondition').value = cycle.targetCondition;
+                    document.getElementById('obstacles').value = cycle.obstacles || '';
+                    document.getElementById('nextSteps').value = cycle.nextSteps;
+                    document.getElementById('deadline').value = cycle.deadline || '';
+                    document.getElementById('learnings').value = cycle.learnings || '';
+                }
+            } else {
+                document.getElementById('cycleModalTitle').textContent = 'Add New KATA Cycle';
+                document.getElementById('cycleForm').reset();
+            }
+            
+            document.getElementById('cycleModal').classList.add('active');
+        }
+
+        function closeCycleModal() {
+            editingCycleId = null;
+            document.getElementById('cycleModal').classList.remove('active');
+            document.getElementById('cycleForm').reset();
+        }
+
+        function openInfoModal() {
+            document.getElementById('infoModal').classList.add('active');
+        }
+
+        function closeInfoModal() {
+            document.getElementById('infoModal').classList.remove('active');
+        }
+
+        // ============================================
+        // DETAIL VIEW FUNCTIONS
+        // ============================================
+
+        function showProjectDetail(projectId) {
+            currentProjectId = projectId;
+            const project = projects.find(p => p.id === projectId);
+            if (!project) return;
+
+            document.getElementById('detailTitle').textContent = project.title;
+            document.getElementById('detailDescription').textContent = project.description;
+            document.getElementById('detailOwner').textContent = project.owner;
+            document.getElementById('detailStartDate').textContent = formatDate(project.startDate);
+
+            renderCycles(project);
+            document.getElementById('detailView').classList.add('active');
+        }
+
+        function closeDetailView() {
+            currentProjectId = null;
+            document.getElementById('detailView').classList.remove('active');
+        }
+
+        function editCurrentProject() {
+            openProjectModal(currentProjectId);
+        }
+
+        function editCycle(projectId, cycleId) {
+            openCycleModal(cycleId);
+        }
+
+        // ============================================
+        // DELETE FUNCTIONS
+        // ============================================
+
+        async function deleteCurrentProject() {
+            if (!confirm('Are you sure you want to delete this project? This action cannot be undone.')) {
+                return;
+            }
+
+            if (await deleteProjectFromDB(currentProjectId)) {
+                closeDetailView();
+                await loadProjects();
+            }
+        }
+
+        async function deleteCycle(projectId, cycleId) {
+            if (!confirm('Are you sure you want to delete this cycle?')) {
+                return;
+            }
+
+            const project = projects.find(p => p.id === projectId);
+            if (!project) return;
+
+            const index = project.cycles.findIndex(c => c.id === cycleId);
+            if (index !== -1) {
+                project.cycles.splice(index, 1);
+                if (await saveProject(project)) {
+                    renderCycles(project);
+                }
+            }
+        }
+// ============================================
+        // COMMENTS SYSTEM
+        // ============================================
+
+        function openCommentsModal(cycleId, fieldType) {
+            currentCommentCycleId = cycleId;
+            currentCommentFieldType = fieldType;
+            
+            const fieldNames = {
+                'actual': 'Actual Condition',
+                'target': 'Target Condition',
+                'obstacles': 'Obstacles',
+                'nextSteps': 'Next Steps',
+                'learnings': 'Learnings'
+            };
+            
+            document.getElementById('commentsModalTitle').textContent = `Comments: ${fieldNames[fieldType]}`;
+            renderComments();
+            document.getElementById('commentsModal').classList.add('active');
+        }
+
+        function closeCommentsModal() {
+            currentCommentCycleId = null;
+            currentCommentFieldType = null;
+            document.getElementById('commentsModal').classList.remove('active');
+            document.getElementById('addCommentForm').reset();
+        }
+
+        function renderComments() {
+            const project = projects.find(p => p.id === currentProjectId);
+            if (!project) return;
+            
+            const cycle = project.cycles.find(c => c.id === currentCommentCycleId);
+            if (!cycle) return;
+            
+            if (!cycle.comments) cycle.comments = {};
+            
+            const fieldComments = Object.values(cycle.comments).filter(c => c.fieldType === currentCommentFieldType);
+            fieldComments.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            const container = document.getElementById('commentsList');
+            
+            if (fieldComments.length === 0) {
+                container.innerHTML = '<div class="no-comments">No comments yet. Be the first to add one!</div>';
+                return;
+            }
+            
+            container.innerHTML = fieldComments.map(comment => `
+                <div class="comment-item">
+                    <div class="comment-header">
+                        <span class="comment-author">${escapeHtml(comment.authorName)}</span>
+                        <span class="comment-time">${formatCommentTime(comment.timestamp)}</span>
+                    </div>
+                    <div class="comment-text">${escapeHtml(comment.text)}</div>
+                    <div class="comment-actions">
+                        ${comment.author === currentUser.email ? `
+                            <button class="btn btn-secondary btn-icon" onclick="editComment('${comment.id}')">Edit</button>
+                            <button class="btn btn-danger btn-icon" onclick="deleteComment('${comment.id}')">Delete</button>
+                        ` : ''}
+                        <button class="btn btn-secondary btn-icon" onclick="replyToComment('${comment.id}')">Reply</button>
+                    </div>
+                    ${comment.replies && comment.replies.length > 0 ? `
+                        <div class="replies">
+                            ${comment.replies.map(reply => `
+                                <div class="reply-item">
+                                    <div class="comment-header">
+                                        <span class="comment-author">${escapeHtml(reply.authorName)}</span>
+                                        <span class="comment-time">${formatCommentTime(reply.timestamp)}</span>
+                                    </div>
+                                    <div class="comment-text">${escapeHtml(reply.text)}</div>
+                                    ${reply.author === currentUser.email ? `
+                                        <div class="comment-actions">
+                                            <button class="btn btn-danger btn-icon" onclick="deleteReply('${comment.id}', '${reply.id}')">Delete</button>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        async function addComment(text) {
+            const project = projects.find(p => p.id === currentProjectId);
+            if (!project) return;
+            
+            const cycle = project.cycles.find(c => c.id === currentCommentCycleId);
+            if (!cycle) return;
+            
+            if (!cycle.comments) cycle.comments = {};
+            
+            const commentId = 'comment_' + Date.now();
+            cycle.comments[commentId] = {
+                id: commentId,
+                fieldType: currentCommentFieldType,
+                text: text,
+                author: currentUser.email,
+                authorName: currentUser.name,
+                timestamp: new Date().toISOString(),
+                replies: []
+            };
+            
+            if (await saveProject(project)) {
+                renderComments();
+                document.getElementById('addCommentForm').reset();
+            }
+        }
+
+        async function editComment(commentId) {
+            const project = projects.find(p => p.id === currentProjectId);
+            if (!project) return;
+            
+            const cycle = project.cycles.find(c => c.id === currentCommentCycleId);
+            if (!cycle || !cycle.comments || !cycle.comments[commentId]) return;
+            
+            const comment = cycle.comments[commentId];
+            if (comment.author !== currentUser.email) {
+                alert('You can only edit your own comments');
+                return;
+            }
+            
+            const newText = prompt('Edit your comment:', comment.text);
+            if (newText && newText.trim()) {
+                comment.text = newText.trim();
+                comment.edited = true;
+                comment.editedAt = new Date().toISOString();
+                
+                if (await saveProject(project)) {
+                    renderComments();
+                }
+            }
+        }
+
+        async function deleteComment(commentId) {
+            if (!confirm('Are you sure you want to delete this comment?')) return;
+            
+            const project = projects.find(p => p.id === currentProjectId);
+            if (!project) return;
+            
+            const cycle = project.cycles.find(c => c.id === currentCommentCycleId);
+            if (!cycle || !cycle.comments) return;
+            
+            delete cycle.comments[commentId];
+            
+            if (await saveProject(project)) {
+                renderComments();
+            }
+        }
+
+        async function replyToComment(commentId) {
+            const replyText = prompt('Write your reply:');
+            if (!replyText || !replyText.trim()) return;
+            
+            const project = projects.find(p => p.id === currentProjectId);
+            if (!project) return;
+            
+            const cycle = project.cycles.find(c => c.id === currentCommentCycleId);
+            if (!cycle || !cycle.comments || !cycle.comments[commentId]) return;
+            
+            const comment = cycle.comments[commentId];
+            if (!comment.replies) comment.replies = [];
+            
+            comment.replies.push({
+                id: 'reply_' + Date.now(),
+                text: replyText.trim(),
+                author: currentUser.email,
+                authorName: currentUser.name,
+                timestamp: new Date().toISOString()
+            });
+            
+            if (await saveProject(project)) {
+                renderComments();
+            }
+        }
+
+        async function deleteReply(commentId, replyId) {
+            if (!confirm('Are you sure you want to delete this reply?')) return;
+            
+            const project = projects.find(p => p.id === currentProjectId);
+            if (!project) return;
+            
+            const cycle = project.cycles.find(c => c.id === currentCommentCycleId);
+            if (!cycle || !cycle.comments || !cycle.comments[commentId]) return;
+            
+            const comment = cycle.comments[commentId];
+            if (!comment.replies) return;
+            
+            comment.replies = comment.replies.filter(r => r.id !== replyId);
+            
+            if (await saveProject(project)) {
+                renderComments();
+            }
+        }
+
+        function getCommentCount(cycle, fieldType) {
+            if (!cycle.comments) return 0;
+            return Object.values(cycle.comments).filter(c => c.fieldType === fieldType).length;
+        }
+
+       function formatCommentTime(timestamp) {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+            
+            if (diffMins < 1) return 'just now';
+            if (diffMins < 60) return `${diffMins}m ago`;
+            if (diffHours < 24) return `${diffHours}h ago`;
+            if (diffDays < 7) return `${diffDays}d ago`;
+            return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+        }
+
+	  // ============================================
+        // UTILITY FUNCTIONS
+        // ============================================
+
+		 function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+function getUpdateInfo(project) {
+            // Get the most recent timestamp
+            const lastUpdate = project.updatedAt || project.createdAt;
+            if (!lastUpdate) return null;
+            
+            const now = new Date();
+            const updateDate = new Date(lastUpdate);
+            const diffMs = now - updateDate;
+            const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+            
+            // Show flag for updates within last 4 days
+            if (diffDays <= 4) {
+                let timeText;
+                if (diffDays === 0) {
+                    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+                    timeText = diffHours === 0 ? 'just now' : `${diffHours}h ago`;
+                } else if (diffDays === 1) {
+                    timeText = 'yesterday';
+                } else {
+                    timeText = `${diffDays} days ago`;
+                }
+                return timeText;
+            }
+            return null;
+        }
+		function formatDate(dateStr) {
+            if (!dateStr) return 'Not set';
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+        }
+
+        function formatStatus(status) {
+            return status.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+        }
+
+        function getDeadlineClass(deadline) {
+            if (!deadline) return '';
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const deadlineDate = new Date(deadline);
+            deadlineDate.setHours(0, 0, 0, 0);
+            const daysUntil = Math.ceil((deadlineDate - today) / (1000 * 60 * 60 * 24));
+
+            if (daysUntil < 0) return 'overdue';
+            if (daysUntil <= 7) return 'upcoming';
+            return 'ok';
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ============================================
+        // START APP
+        // ============================================
+
+        // Create user accounts on first load
+        createUserAccounts();
+    </script>
+</body>
+</html>
