@@ -626,6 +626,10 @@
                             <p id="detailStartDate"></p>
                         </div>
                     </div>
+                    <div id="detailChangeStatement" style="display: none; background: #fef9e7; border-left: 4px solid #f59e0b; padding: 20px; margin-top: 20px; border-radius: 8px;">
+                        <h3 style="color: #92400e; margin-bottom: 10px; font-size: 0.9em;">📋 CHANGE STATEMENT</h3>
+                        <p id="detailChangeStatementText" style="color: #555; line-height: 1.6;"></p>
+                    </div>
                 </div>
 
                 <div class="cycles-header">
@@ -666,11 +670,18 @@
                     </div>
                     <div class="form-group">
                         <label for="projectStatus">Status *</label>
-                        <select id="projectStatus" required>
+                        <select id="projectStatus" required onchange="toggleChangeStatement()">
                             <option value="active">Active</option>
                             <option value="on-hold">On Hold</option>
                             <option value="completed">Completed</option>
                         </select>
+                    </div>
+                    <div class="form-group" id="changeStatementGroup" style="display: none;">
+                        <label for="projectChangeStatement">Change Statement * <span style="font-size: 0.85em; color: #666;">(What did we learn? 2-3 lines max, approx 200-300 characters)</span></label>
+                        <textarea id="projectChangeStatement" rows="3" maxlength="300" placeholder="Summarize key learnings and outcomes from this project..."></textarea>
+                        <div style="font-size: 0.85em; color: #666; margin-top: 5px;">
+                            <span id="charCount">0</span>/300 characters
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="projectStartDate">Start Date *</label>
@@ -983,6 +994,11 @@
                     addComment(text.trim());
                 }
             };
+
+            // Character counter for change statement
+            document.getElementById('projectChangeStatement').oninput = (e) => {
+                document.getElementById('charCount').textContent = e.target.value.length;
+            };
         }
         // ============================================
         // PROJECT FORM HANDLING
@@ -996,6 +1012,11 @@
                 status: document.getElementById('projectStatus').value,
                 startDate: document.getElementById('projectStartDate').value
             };
+
+            // Add change statement if status is completed
+            if (projectData.status === 'completed') {
+                projectData.changeStatement = document.getElementById('projectChangeStatement').value;
+            }
 
             let project;
             if (editingProjectId) {
@@ -1115,6 +1136,12 @@ project.updatedAt = new Date().toISOString();
     </div>
                 <div class="project-title">${escapeHtml(project.title)}</div>
                             <div class="project-description">${escapeHtml(project.description)}</div>
+                            ${project.status === 'completed' && project.changeStatement ? `
+                                <div style="background: #fef9e7; border-left: 3px solid #f59e0b; padding: 10px; margin: 10px 0; border-radius: 4px;">
+                                    <div style="font-weight: 600; color: #92400e; font-size: 0.85em; margin-bottom: 5px;">📋 CHANGE STATEMENT</div>
+                                    <div style="color: #555; font-size: 0.9em; line-height: 1.5;">${escapeHtml(project.changeStatement)}</div>
+                                </div>
+                            ` : ''}
                             <div class="project-meta">
                                 <div>Owner: <strong>${escapeHtml(project.owner)}</strong></div>
 <div>Created by: ${escapeHtml(project.createdBy || 'Unknown')}</div>
@@ -1236,10 +1263,13 @@ project.updatedAt = new Date().toISOString();
                     document.getElementById('projectOwner').value = project.owner;
                     document.getElementById('projectStatus').value = project.status;
                     document.getElementById('projectStartDate').value = project.startDate;
+                    document.getElementById('projectChangeStatement').value = project.changeStatement || '';
+                    toggleChangeStatement();
                 }
             } else {
                 document.getElementById('projectModalTitle').textContent = 'Create New Project';
                 document.getElementById('projectForm').reset();
+                toggleChangeStatement();
             }
             
             document.getElementById('projectModal').classList.add('active');
@@ -1249,6 +1279,21 @@ project.updatedAt = new Date().toISOString();
             editingProjectId = null;
             document.getElementById('projectModal').classList.remove('active');
             document.getElementById('projectForm').reset();
+            document.getElementById('changeStatementGroup').style.display = 'none';
+        }
+
+        function toggleChangeStatement() {
+            const status = document.getElementById('projectStatus').value;
+            const group = document.getElementById('changeStatementGroup');
+            const textarea = document.getElementById('projectChangeStatement');
+            
+            if (status === 'completed') {
+                group.style.display = 'block';
+                textarea.required = true;
+            } else {
+                group.style.display = 'none';
+                textarea.required = false;
+            }
         }
 
         function openCycleModal(cycleId = null) {
@@ -1301,6 +1346,16 @@ project.updatedAt = new Date().toISOString();
             document.getElementById('detailDescription').textContent = project.description;
             document.getElementById('detailOwner').textContent = project.owner;
             document.getElementById('detailStartDate').textContent = formatDate(project.startDate);
+
+            // Show change statement if project is completed and has one
+            const changeStatementDiv = document.getElementById('detailChangeStatement');
+            const changeStatementText = document.getElementById('detailChangeStatementText');
+            if (project.status === 'completed' && project.changeStatement) {
+                changeStatementText.textContent = project.changeStatement;
+                changeStatementDiv.style.display = 'block';
+            } else {
+                changeStatementDiv.style.display = 'none';
+            }
 
             renderCycles(project);
             document.getElementById('detailView').classList.add('active');
